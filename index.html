@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MemoVault</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(63,185,80,0.007) 3px, rgba(63,185,80,0.007) 4px);
+    pointer-events: none; z-index: 9999;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    padding: 0 24px;
+    height: 50px;
+    border-bottom: 1px solid #21262d;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .topbar-brand {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .topbar-brand span { color: #3fb950; }
+  .topbar-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: #3fb950;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border: 1px solid #21262d;
+    padding: 2px 8px;
+  }
+  .topbar-count {
+    margin-left: auto;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: #8b949e;
+    letter-spacing: 1px;
+  }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; flex: 1; height: calc(100vh - 50px); overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 230px;
+    min-width: 230px;
+    border-right: 1px solid #21262d;
+    overflow-y: auto;
+    padding: 16px 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: #3fb950;
+    padding: 8px 16px 4px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cat-label:hover { color: #58d068; }
+  .cat-arrow {
+    font-size: 8px;
+    color: #30363d;
+    transition: transform 0.15s;
+    display: inline-block;
+  }
+  .cat-label.collapsed .cat-arrow { transform: rotate(-90deg); }
+  .cat-items.hidden { display: none; }
+
+  .memo-link {
+    display: block;
+    padding: 5px 16px 5px 24px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    color: #8b949e;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.1s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+  }
+  .memo-link:hover { color: #c9d1d9; background: #161b22; }
+  .memo-link.active {
+    color: #e6edf3;
+    border-left-color: #3fb950;
+    background: #161b22;
+  }
+
+  /* ── CONTENT ── */
+  .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  iframe { flex: 1; border: none; width: 100%; height: 100%; background: #0d1117; }
+
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .empty-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #30363d;
+  }
+  .empty-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: #21262d;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">Memo<span>Vault</span></div>
+  <div class="topbar-tag">Dev Notes</div>
+  <div class="topbar-count" id="memoCount"></div>
+</div>
+
+<div class="layout">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="content" id="content">
+    <div class="empty-state">
+      <div class="empty-title">Válassz egy memót</div>
+      <div class="empty-sub">// select from sidebar</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MEMOS = [
+  { id: "ai-local-llm",            title: "Local LLM fejlesztőknek",                   category: "AI",      date: "2026-04-29", tags: ["ollama","llm","opencode","qwen"] },
+  { id: "ai-claude-15-tipp",       title: "15 Claude tipp",                             category: "AI",      date: "2026-03-24", tags: ["claude","tippek","projects","prompt","workflow","MCP"] },
+  { id: "net-kafka-rabbitmq",       title: "Kafka vs RabbitMQ",                          category: ".Net",    date: "2026-04-29", tags: ["kafka","rabbitmq","messaging","masstransit"] },
+  { id: "net-dependency-injection", title: "Dependency Injection — a mélyebb szemszög", category: ".Net",    date: "2026-04-29", tags: ["DI","DIP","IoC","clean-architecture","tesztelhetőség"] },
+  { id: "english-ai-tanulas",       title: "Tanulás AI Assistanttal",                   category: "English", date: "2026-03-26", tags: ["english","tanulás","prompt","chatgpt","AI-tutor"] },
+  { id: "gpu-optimization",         title: "GPU Max — CPU Bottleneck Bypass",            category: "Gaming",  date: "2026-04-29", tags: ["gpu","nvidia","fps","bottleneck","windows"] }
+];
+
+function buildSidebar() {
+  document.getElementById('memoCount').textContent = MEMOS.length + ' memo';
+  const sidebar = document.getElementById('sidebar');
+  const cats = {};
+  MEMOS.forEach(m => { if (!cats[m.category]) cats[m.category] = []; cats[m.category].push(m); });
+
+  Object.entries(cats).forEach(([cat, memos]) => {
+    const label = document.createElement('div');
+    label.className = 'cat-label';
+    label.innerHTML = `${cat} <span class="cat-arrow">▶</span>`;
+    const items = document.createElement('div');
+    items.className = 'cat-items';
+    label.onclick = () => { items.classList.toggle('hidden'); label.classList.toggle('collapsed'); };
+
+    memos.forEach(m => {
+      const link = document.createElement('div');
+      link.className = 'memo-link';
+      link.textContent = m.title;
+      link.dataset.id = m.id;
+      link.onclick = () => showMemo(m);
+      items.appendChild(link);
+    });
+
+    sidebar.appendChild(label);
+    sidebar.appendChild(items);
+  });
+}
+
+function showMemo(meta) {
+  document.querySelectorAll('.memo-link').forEach(l => l.classList.remove('active'));
+  document.querySelector(`.memo-link[data-id="${meta.id}"]`).classList.add('active');
+  const content = document.getElementById('content');
+  content.innerHTML = `<iframe src="memos/${meta.id}.html"></iframe>`;
+}
+
+buildSidebar();
+</script>
+</body>
+</html>

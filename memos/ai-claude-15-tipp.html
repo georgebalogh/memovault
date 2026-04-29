@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15 Claude tipp</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
+
+  :root {
+    --green: #3fb950; --green-dark: #0d2016; --cyan: #58d068;
+    --orange: #e3b341;
+    --bg: #0d1117; --bg2: #111620; --bg3: #161b22;
+    --border: #21262d; --border2: #30363d;
+    --text: #e6edf3; --text-mid: #c9d1d9; --text-dim: #8b949e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.75; padding: 40px 32px 80px; max-width: 820px; margin: 0 auto; }
+  body::before { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(63,185,80,0.007) 3px, rgba(63,185,80,0.007) 4px); pointer-events: none; z-index: 9999; }
+
+  header { padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .header-tag { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--green); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .header-tag::before { content: ''; display: inline-block; width: 16px; height: 1px; background: var(--green); }
+  h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 48px); text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1.1; }
+  h1 span { color: var(--green); }
+  .meta { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-dim); }
+  .tag { background: var(--bg3); border: 1px solid var(--border2); padding: 2px 7px; color: var(--green); font-size: 13px; letter-spacing: 1px; }
+
+  .section { margin-top: 32px; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .section-num { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--green); background: var(--green-dark); padding: 3px 8px; letter-spacing: 2px; flex-shrink: 0; }
+  .section-title { font-family: 'Rajdhani', sans-serif; font-size: 23px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+  .callout { padding: 10px 15px; margin: 12px 0; border-left: 3px solid; background: var(--bg3); font-size: 15px; line-height: 1.75; color: var(--text-mid); font-style: italic; }
+  .callout.tip  { border-color: var(--green); }
+  .callout.warn { border-color: var(--orange); color: #d4a840; }
+  .callout strong { font-style: normal; color: #fff; }
+
+  /* TIP CARDS */
+  .tip-grid { display: flex; flex-direction: column; gap: 2px; }
+  .tip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    padding: 13px 16px;
+    transition: border-left-color 0.15s;
+  }
+  .tip:hover { border-left-color: var(--green); }
+  .tip-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 5px; }
+  .tip-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px; font-weight: 700;
+    color: var(--green); background: var(--green-dark);
+    padding: 2px 7px; letter-spacing: 1px; flex-shrink: 0;
+  }
+  .tip-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 0.5px; color: #fff;
+  }
+  .tip-body { font-size: 16px; color: var(--text-mid); line-height: 1.7; }
+  .tip-body strong { color: #fff; font-weight: 600; }
+  .tip-body em { color: var(--cyan); font-style: normal; }
+  .tip-body code { font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 14px; color: var(--green); background: var(--bg); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">AI / Claude</div>
+  <h1>15 Claude <span>Tipp</span></h1>
+  <div class="meta">
+    <span>2026-03-24</span>
+    <span style="color:#30363d">|</span>
+    <span class="tag">claude</span>
+    <span class="tag">tippek</span>
+    <span class="tag">projects</span>
+    <span class="tag">prompt</span>
+    <span class="tag">workflow</span>
+    <span class="tag">MCP</span>
+  </div>
+</header>
+
+<!-- KONTEXTUS ÉS MEMÓRIA -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">01—03</span>
+    <span class="section-title">Kontextus és memória</span>
+  </div>
+  <div class="tip-grid">
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">01</span><span class="tip-title">Projects — perzisztens kontextus</span></div>
+      <div class="tip-body">A Projects nem csak mappa — minden chatben automatikusan látja a feltöltött fájlokat és a custom instructions-t. <strong>Egy projekt = egy domain.</strong> Ne keverd a munkát, a személyes dolgokat és a tanulást ugyanabba a projektbe. A Custom Instructions mező a legtöbb user számára üres — ez hatalmas kihagyott lehetőség.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">02</span><span class="tip-title">Memory — mit tud rólad Claude</span></div>
+      <div class="tip-body">A Claude memóriájából generált összefoglalók minden sessionben betöltődnek. Frissíteni lehet: <em>"Jegyezd meg, hogy..."</em> vagy Settings → Memory. <strong>Ne bízz vakon benne</strong> — a memory késhet, és nem teljes. Kritikus kontextust mindig add meg explicit.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">03</span><span class="tip-title">Session hossz kezelése</span></div>
+      <div class="tip-body">20 üzenet után érdemes új sessiont nyitni és rövid összefoglalóval átadni a kontextust. <strong>Fresh session + jó brief = jobb válasz</strong> mint egy 50 üzenetes elnyújtott chat.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- PROMPT TECHNIKÁK -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">04—07</span>
+    <span class="section-title">Prompt technikák</span>
+  </div>
+  <div class="tip-grid">
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">04</span><span class="tip-title">Szerepkör + feladat + formátum hármas</span></div>
+      <div class="tip-body">Ez az univerzális alap. <code>Te egy senior X vagy. Csináld Y-t. Formátum: Z.</code> A szerepkör nem csak stílust ad — aktiválja a domain-specifikus tudást.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">05</span><span class="tip-title">XML tagek a struktúrához</span></div>
+      <div class="tip-body">Hosszú promptoknál az XML tagek erős határokat húznak. <code>&lt;context&gt;</code>, <code>&lt;task&gt;</code> — a model tréningadata tele van XML-lel, ezért ezeket kiemelten kezeli.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">06</span><span class="tip-title">Iterálj, ne írj újra</span></div>
+      <div class="tip-body"><em>"Tedd tömörebbé"</em>, <em>"menj mélyebbre az X részben"</em>, <em>"adj kód példát"</em> — finomítanak anélkül, hogy az egész promptot újra kell írni.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">07</span><span class="tip-title">Self-critique pattern</span></div>
+      <div class="tip-body">Válasz után: <em>"Kritizáld meg a saját válaszodat — mi hiányzik?"</em> Majd: <em>"Javítsd ki ezek alapján."</em> Különösen hasznos architektúra döntéseknél.
+      <div class="callout tip" style="margin-top:8px"><strong>Senior pattern:</strong> soha ne küldj el Claude-outputot review nélkül. A self-critique egy menet alatt megduplázza a minőséget.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- FUNKCIÓK ÉS ESZKÖZÖK -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">08—11</span>
+    <span class="section-title">Funkciók és eszközök</span>
+  </div>
+  <div class="tip-grid">
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">08</span><span class="tip-title">Extended Thinking — mikor használd</span></div>
+      <div class="tip-body"><strong>Érdemes:</strong> komplex logika, architektúra döntések, bug ahol nem egyértelmű az ok. <strong>Nem érdemes:</strong> kódgenerálás, refactor, magyarázatok — lassabb és több tokent fogyaszt.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">09</span><span class="tip-title">Artifacts — mire való valójában</span></div>
+      <div class="tip-body">Az Artifact React komponenst, HTML oldalt, Mermaid diagramot, Markdown dokumentumot renderel élőben. <strong>Self-contained kell legyen</strong> — nem fér hozzá külső fájlokhoz.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">10</span><span class="tip-title">Deep Research — ne kérdéssel indítsd</span></div>
+      <div class="tip-body">A Deep Research nem kereső — kutatót szimulál. <strong>Adj célcsoportot és formátumot:</strong> <em>"Kutass X-ről, .NET senior fejlesztő szemszögéből, döntési keretrendszerrel a végén."</em></div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">11</span><span class="tip-title">MCP — Claude kiterjesztése</span></div>
+      <div class="tip-body">MCP szerverek lehetővé teszik hogy Claude valódi eszközöket használjon: Gmail, Google Drive, Supabase, GitHub, Filesystem. <strong>Nem varázslat</strong> — a tool call explicit, látod mit hív.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- HALADÓ WORKFLOW -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12—15</span>
+    <span class="section-title">Haladó workflow</span>
+  </div>
+  <div class="tip-grid">
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">12</span><span class="tip-title">Claude Code — CLAUDE.md a kulcs</span></div>
+      <div class="tip-body">A Claude Code automatikusan olvassa a <code>CLAUDE.md</code> fájlt a repo gyökerében. <strong>Jó CLAUDE.md = nem kell minden sessionben újra elmondani a kontextust.</strong> Rövid legyen — 50-100 sor, nem 500.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">13</span><span class="tip-title">Lánc promptok komplex feladathoz</span></div>
+      <div class="tip-body">Nagy feladatot ne egy promptban oldj meg. Bontsd lépésekre: 1. elemzés, 2. terv, 3. implementáció, 4. review. Minden lépésnél ellenőrizheted az irányt.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">14</span><span class="tip-title">Style guide beállítás</span></div>
+      <div class="tip-body">Settings → Style: globális kommunikációs stílus — tömör vagy részletes, formális vagy közvetlen, technikai vagy közérthető. Hasznos ha más kontextusokban más stílust szeretnél.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-header"><span class="tip-num">15</span><span class="tip-title">Token-tudatos használat</span></div>
+      <div class="tip-body">Batch a feladatokat: 3 külön prompt helyett 1 prompt 3 résszel. Sonnet gyors taskokra, Opus komplex döntésekre. Ha egy session "elfárad", új sessiont kell nyitni összefoglalóval.
+      <div class="callout warn" style="margin-top:8px">A rate limit gyorsabban jön el Thinking módban és hosszú sessionekben. Tudatos váltással 3x annyi értékes munkát végezhetsz.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

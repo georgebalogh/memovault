@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dependency Injection — a mélyebb szemszög</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
+
+  :root {
+    --green:      #3fb950;
+    --green-dark: #0d2016;
+    --cyan:       #58d068;
+    --red:        #f85149;
+    --orange:     #e3b341;
+    --bg:         #0d1117;
+    --bg2:        #111620;
+    --bg3:        #161b22;
+    --border:     #21262d;
+    --border2:    #30363d;
+    --text:       #e6edf3;
+    --text-mid:   #c9d1d9;
+    --text-dim:   #8b949e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.75;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(63,185,80,0.007) 3px, rgba(63,185,80,0.007) 4px);
+    pointer-events: none; z-index: 9999;
+  }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  header { padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+
+  .header-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px; color: var(--green);
+    letter-spacing: 4px; text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .header-tag::before {
+    content: ''; display: inline-block;
+    width: 16px; height: 1px; background: var(--green);
+  }
+
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: clamp(30px, 4vw, 48px);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff; line-height: 1.1;
+  }
+  h1 span { color: var(--green); }
+
+  .meta {
+    margin-top: 14px;
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px; color: var(--text-dim);
+  }
+  .tag {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    padding: 2px 7px;
+    color: var(--green);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  .sep { color: var(--border2); }
+
+  .section { margin-top: 36px; }
+
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px; color: var(--green);
+    background: var(--green-dark);
+    padding: 3px 8px; letter-spacing: 2px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 23px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #fff;
+  }
+
+  .sub-header {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--cyan);
+    margin: 20px 0 8px;
+  }
+
+  p { color: var(--text-mid); margin-bottom: 10px; }
+
+  ul.prose {
+    color: var(--text-mid);
+    margin: 8px 0 14px 20px;
+  }
+  ul.prose li { margin-bottom: 4px; }
+  ul.prose li strong { color: #fff; font-weight: 600; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .callout {
+    padding: 10px 15px; margin: 14px 0;
+    border-left: 3px solid;
+    background: var(--bg3);
+    font-size: 15px; line-height: 1.75;
+    color: var(--text-mid);
+    font-style: italic;
+  }
+  .callout.tip  { border-color: var(--green); }
+  .callout.warn { border-color: var(--orange); color: #d4a840; }
+  .callout.info { border-color: var(--cyan); }
+  .callout strong { font-style: normal; color: #fff; }
+
+  .code-label {
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.05em; margin-bottom: 4px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .code-label.bad  { color: var(--red); }
+  .code-label.good { color: var(--green); }
+
+  pre {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 13px 16px;
+    overflow-x: auto;
+    margin: 4px 0 14px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  pre.bad  { border-left: 3px solid var(--red); }
+  pre.good { border-left: 3px solid var(--green); }
+
+  .flow {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.9;
+    margin: 10px 0 14px;
+  }
+  .flow .kw { color: var(--green); }
+  .flow .arr { color: var(--border2); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    margin: 12px 0 18px;
+  }
+  th {
+    background: var(--bg3);
+    color: var(--green);
+    padding: 7px 10px;
+    text-align: left;
+    border: 1px solid var(--border);
+    font-weight: 600;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  td {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: var(--bg); }
+  tr:nth-child(odd)  td { background: var(--bg2); }
+  td code {
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 14px;
+    color: var(--green);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-tag">.Net / Architecture</div>
+    <h1>Dependency <span>Injection</span></h1>
+    <div class="meta">
+      <span>2026-04-29</span>
+      <span class="sep">|</span>
+      <span class="tag">DI</span>
+      <span class="tag">DIP</span>
+      <span class="tag">IoC</span>
+      <span class="tag">clean-architecture</span>
+      <span class="tag">tesztelhetőség</span>
+    </div>
+  </header>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">A gyökérprobléma</span>
+    </div>
+
+    <p>Ha egy osztály maga példányosítja a függőségét, három fájdalmat okoz:</p>
+    <ul class="prose">
+      <li><strong>Tesztelhetetlen</strong> — nem tudod lecserélni fake-re</li>
+      <li><strong>Merev csatolás</strong> — a változás dominóeffektusa végigmegy a kódon</li>
+      <li><strong>Nem cserélhető futás közben</strong> — be van égetve az implementáció</li>
+    </ul>
+
+    <div class="code-label bad">❌ ROSSZ</div>
+    <pre class="bad">public class OrderService
+{
+    private readonly EmailSender _emailSender;
+
+    public OrderService()
+    {
+        _emailSender = new EmailSender(); // maga példányosítja
+    }
+}</pre>
+
+    <div class="callout tip">Az osztály nem csak <em>használja</em> a függőségét — hanem <em>felelős annak létrehozásáért</em> is. Ez a két dolog össze van mosva.</div>
+
+    <div class="code-label good">✅ JÓ</div>
+    <pre class="good">public class OrderService
+{
+    private readonly IEmailSender _emailSender;
+
+    public OrderService(IEmailSender emailSender) // kívülről jön
+    {
+        _emailSender = emailSender;
+    }
+}</pre>
+
+    <table>
+      <tr><th></th><th>new belül</th><th>DI-val kívülről</th></tr>
+      <tr><td>Tesztelhetőség</td><td>❌</td><td>✅</td></tr>
+      <tr><td>Csatolás</td><td>szoros</td><td>laza</td></tr>
+      <tr><td>Változásállóság</td><td>törékeny</td><td>rugalmas</td></tr>
+      <tr><td>Felelősség</td><td>összekeverve</td><td>szétválasztva</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">A mögöttes elvek — SRP → DIP → IoC → DI</span>
+    </div>
+
+    <div class="flow">
+<span class="kw">SRP</span> felismeri:    "Ez az osztály túl sokat tud / csinál"
+      <span class="arr">↓</span>
+<span class="kw">DIP</span> kimondja:    "Függj absztrakciótól, ne konkrétumtól"
+      <span class="arr">↓</span>
+<span class="kw">IoC</span> megfordítja: "Ne te hozd létre — add át a vezérlést"
+      <span class="arr">↓</span>
+<span class="kw">DI</span>  megvalósítja: "A függőséget kívülről injektáljuk be"
+    </div>
+
+    <div class="sub-header">DIP — a kulcsgondolat</div>
+    <p>Magas szintű modulok ne függjenek alacsony szintűektől. Mindkettő absztrakciótól függjön.</p>
+
+    <div class="code-label bad">❌ ROSSZ</div>
+    <pre class="bad">private readonly EmailSender _emailSender; // konkrét osztály</pre>
+
+    <div class="code-label good">✅ JÓ</div>
+    <pre class="good">private readonly IEmailSender _emailSender; // interfész — absztrakció</pre>
+
+    <div class="callout tip">Az osztály legyen tudatlan arról, ami nem az ő dolga.</div>
+
+    <table>
+      <tr><th>Elv</th><th>Mit mond ki</th><th>Mit old meg</th></tr>
+      <tr><td>SRP</td><td>egy felelősség per osztály</td><td>felismeri a keveredést</td></tr>
+      <tr><td>DIP</td><td>függj absztrakciótól</td><td>megadja az irányt</td></tr>
+      <tr><td>IoC</td><td>add át a vezérlést</td><td>megfordítja a gondolkodást</td></tr>
+      <tr><td>DI</td><td>injektáld kívülről</td><td>konkrét megvalósítás</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Mikor éri meg</span>
+    </div>
+
+    <div class="flow">
+Van mellékhatása a függőségnek? (IO, hálózat, DB)
+  ├── <span class="kw">Igen</span> → DI szinte biztosan indokolt
+  └── Nem → Kell-e tesztelni izoláltan?
+              ├── <span class="kw">Igen</span> → DI érdemes
+              └── Nem → Lesz-e több implementáció?
+                          ├── <span class="kw">Igen</span> → DI érdemes
+                          └── Nem → Valószínűleg felesleges
+    </div>
+
+    <table>
+      <tr><th>Kontextus</th><th>DI érdemes?</th></tr>
+      <tr><td>Mellékhatásos függőség (DB, API, e-mail)</td><td>✅ igen</td></tr>
+      <tr><td>Unit tesztek kellenek</td><td>✅ igen</td></tr>
+      <tr><td>Több implementáció várható</td><td>✅ igen</td></tr>
+      <tr><td>Nagy csapat, hosszú projekt</td><td>✅ igen</td></tr>
+      <tr><td>Pure logic, value object</td><td>❌ nem</td></tr>
+      <tr><td>Prototípus, kis projekt</td><td>❌ általában nem</td></tr>
+      <tr><td>Stabil, soha nem változó segédosztály</td><td>❌ nem</td></tr>
+    </table>
+
+    <div class="callout warn">A DI komplexitást ad cserébe rugalmasságért és tesztelhetőségért. Ez csak akkor éri meg, ha ténylegesen élsz ezekkel az előnyökkel.</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Antipatternok — mikor csináljuk rosszul</span>
+    </div>
+
+    <table>
+      <tr><th>Antipattern</th><th>Tünet</th><th>Igazi probléma</th></tr>
+      <tr><td>Service Locator</td><td><code>ServiceLocator.Get&lt;T&gt;()</code> üzleti logikában</td><td>rejtett függőségek</td></tr>
+      <tr><td>Constructor Explosion</td><td>6+ paraméter a konstruktorban</td><td>SRP-sértés</td></tr>
+      <tr><td>Container Abuse</td><td>value objectek, utils a containerben</td><td>félreértett felelősség</td></tr>
+      <tr><td>Captive Dependency</td><td>Singleton kap Scoped-ot</td><td>életciklus-inkonzisztencia</td></tr>
+      <tr><td>Konkrét injektálás</td><td>interfész helyett konkrét osztály</td><td>elveszett absztrakció</td></tr>
+      <tr><td>Property Injection</td><td><code>public ILogger Logger { get; set; }</code></td><td>elmosott szerződés</td></tr>
+    </table>
+
+    <div class="sub-header">Életciklus-hierarchia</div>
+    <div class="flow">
+<span class="kw">Singleton</span>  <span class="arr">→</span>  csak Singleton-t injektálhat biztonságosan
+<span class="kw">Scoped</span>     <span class="arr">→</span>  Singleton-t és Scoped-ot
+<span class="kw">Transient</span>  <span class="arr">→</span>  bármit
+    </div>
+
+    <div class="sub-header">Service Locator — mikor jogos?</div>
+    <table>
+      <tr><th>Kontextus</th><th>Jogos?</th></tr>
+      <tr><td>IoC container belső implementációja</td><td>✅ ez maga a mechanizmus</td></tr>
+      <tr><td>Composition Root / Startup</td><td>✅ itt van a helye</td></tr>
+      <tr><td>Futásidőben meghatározott típus (dispatch)</td><td>✅ Factory mögött elfogadható</td></tr>
+      <tr><td>Plugin / moduláris rendszer</td><td>✅ indokolt</td></tr>
+      <tr><td>Legacy migráció, átmenetileg</td><td>⚠️ elfogadható, jelöld meg</td></tr>
+      <tr><td>Üzleti logika osztályaiban</td><td>❌ antipattern</td></tr>
+    </table>
+
+    <div class="callout info">A Service Locator akkor jogos, ha az infrastruktúra réteg vagy a composition root használja — és akkor antipattern, ha az üzleti logika nyúl hozzá.</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Teljes C# példa — evolúció</span>
+    </div>
+
+    <div class="code-label bad">❌ V1 — naiv kód</div>
+    <pre class="bad">public class OrderProcessor
+{
+    public void Process(Order order)
+    {
+        var inventoryDb    = new SqlInventoryDatabase("Server=prod;...");
+        var paymentGateway = new StripePaymentGateway("sk_live_...");
+        var emailSender    = new SmtpEmailSender("smtp.company.com", 587);
+        var logger         = new FileLogger("C:\\logs\\orders.log");
+        // szoros csatolás, tesztelhetetlen, be van égetve minden
+    }
+}</pre>
+
+    <div class="code-label good">✅ V2 — interfészek + konstruktor injektálás</div>
+    <pre class="good">public class OrderProcessor
+{
+    private readonly IInventoryService       _inventory;
+    private readonly IPaymentGateway         _payment;
+    private readonly INotificationService    _notifier;
+    private readonly ILogger&lt;OrderProcessor&gt; _logger;
+
+    public OrderProcessor(
+        IInventoryService inventory,
+        IPaymentGateway payment,
+        INotificationService notifier,
+        ILogger&lt;OrderProcessor&gt; logger)
+    {
+        _inventory = inventory;
+        _payment   = payment;
+        _notifier  = notifier;
+        _logger    = logger;
+    }
+
+    public void Process(Order order)
+    {
+        if (!_inventory.CheckStock(order.ProductId, order.Quantity))
+        {
+            _logger.LogWarning("Nincs készlet: {ProductId}", order.ProductId);
+            return;
+        }
+        if (!_payment.Charge(order.CustomerId, order.TotalAmount))
+        {
+            _logger.LogWarning("Fizetés sikertelen: {CustomerId}", order.CustomerId);
+            return;
+        }
+        _inventory.ReduceStock(order.ProductId, order.Quantity);
+        _notifier.Notify(order.CustomerEmail, "Rendelés visszaigazolva");
+        _logger.LogInformation("Rendelés feldolgozva: {OrderId}", order.Id);
+    }
+}</pre>
+
+    <div class="code-label good">✅ V3 — Composition Root (Program.cs)</div>
+    <pre class="good">builder.Services.AddScoped&lt;IInventoryService&gt;(_ =>
+    new SqlInventoryService(connectionString));
+builder.Services.AddScoped&lt;IPaymentGateway&gt;(_ =>
+    new StripePaymentGateway(stripeApiKey));
+builder.Services.AddScoped&lt;INotificationService&gt;(_ =>
+    new EmailNotificationService(smtpHost));
+builder.Services.AddScoped&lt;OrderProcessor&gt;();</pre>
+
+    <div class="code-label good">✅ V4 — Unit teszt fake implementációkkal</div>
+    <pre class="good">var inventory = new FakeInventoryService { StockAvailable = true };
+var payment   = new FakePaymentGateway   { ChargeSucceeds = true };
+var notifier  = new FakeNotificationService();
+var logger    = NullLogger&lt;OrderProcessor&gt;.Instance;
+
+var processor = new OrderProcessor(inventory, payment, notifier, logger);
+processor.Process(testOrder);
+
+Assert.Single(notifier.SentTo);
+Assert.True(inventory.StockReduced);</pre>
+
+    <div class="flow">
+<span class="kw">V1</span> <span class="arr">→</span> new SqlInventoryDatabase(...)  — szoros csatolás, tesztelhetetlen
+<span class="kw">V2</span> <span class="arr">→</span> IInventoryService interfész    — laza csatolás, cserélhető
+<span class="kw">V3</span> <span class="arr">→</span> IoC container összerakja       — vezérlés megfordítva (IoC)
+<span class="kw">V4</span> <span class="arr">→</span> Fake-ekkel tesztelünk          — az egész architektúra befizet
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

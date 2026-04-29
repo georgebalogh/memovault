@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Local LLM fejlesztőknek</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
+
+  :root {
+    --green: #3fb950; --green-dark: #0d2016; --cyan: #58d068;
+    --red: #f85149; --orange: #e3b341;
+    --bg: #0d1117; --bg2: #111620; --bg3: #161b22;
+    --border: #21262d; --border2: #30363d;
+    --text: #e6edf3; --text-mid: #c9d1d9; --text-dim: #8b949e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.75; padding: 40px 32px 80px; max-width: 820px; margin: 0 auto; }
+  body::before { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(63,185,80,0.007) 3px, rgba(63,185,80,0.007) 4px); pointer-events: none; z-index: 9999; }
+
+  header { padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .header-tag { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--green); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .header-tag::before { content: ''; display: inline-block; width: 16px; height: 1px; background: var(--green); }
+  h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 48px); text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1.1; }
+  h1 span { color: var(--green); }
+  .meta { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-dim); }
+  .tag { background: var(--bg3); border: 1px solid var(--border2); padding: 2px 7px; color: var(--green); font-size: 13px; letter-spacing: 1px; }
+
+  .section { margin-top: 32px; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .section-num { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--green); background: var(--green-dark); padding: 3px 8px; letter-spacing: 2px; flex-shrink: 0; }
+  .section-title { font-family: 'Rajdhani', sans-serif; font-size: 23px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+  .sub-header { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cyan); margin: 20px 0 8px; }
+
+  p { color: var(--text-mid); margin-bottom: 10px; }
+  ul.prose { color: var(--text-mid); margin: 8px 0 14px 20px; }
+  ul.prose li { margin-bottom: 5px; }
+  ul.prose li strong { color: #fff; font-weight: 600; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .callout { padding: 10px 15px; margin: 14px 0; border-left: 3px solid; background: var(--bg3); font-size: 15px; line-height: 1.75; color: var(--text-mid); font-style: italic; }
+  .callout.tip  { border-color: var(--green); }
+  .callout.warn { border-color: var(--orange); color: #d4a840; }
+
+  .code-label { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px; font-family: 'Share Tech Mono', monospace; color: var(--text-dim); }
+  pre { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 13px 16px; overflow-x: auto; margin: 4px 0 14px; font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 12px; color: var(--text); line-height: 1.65; }
+  code { font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 11px; color: var(--green); background: var(--bg); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 12px 0 18px; }
+  th { background: var(--bg3); color: var(--green); padding: 7px 10px; text-align: left; border: 1px solid var(--border); font-weight: 600; font-family: 'Share Tech Mono', monospace; font-size: 14px; letter-spacing: 0.5px; }
+  td { padding: 6px 10px; border: 1px solid var(--border); color: var(--text-mid); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg); }
+  tr:nth-child(odd)  td { background: var(--bg2); }
+  td code { font-size: 11px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">AI / Local Models</div>
+  <h1>Local LLM <span>fejlesztőknek</span></h1>
+  <div class="meta">
+    <span>2026-04-29</span>
+    <span style="color:#30363d">|</span>
+    <span class="tag">ollama</span>
+    <span class="tag">llm</span>
+    <span class="tag">opencode</span>
+    <span class="tag">qwen</span>
+  </div>
+</header>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">Aktív modellek — RTX 4070 Ti 12GB</span>
+  </div>
+  <table>
+    <tr><th>Model</th><th>Méret</th><th>Context</th><th>GPU</th><th>Mire való</th></tr>
+    <tr><td><code>qwen3.6-35b-16k</code></td><td>27 GB</td><td>16k</td><td>65/35</td><td>Fő agentic, OpenCode</td></tr>
+    <tr><td><code>batiai/qwen3.5-9b:q6-32k</code></td><td>7.4 GB</td><td>32k</td><td>100%</td><td>Gyors fallback</td></tr>
+    <tr><td><code>qwen2.5-coder:7b-q8-32k</code></td><td>8.1 GB</td><td>32k</td><td>76/24</td><td>Tiszta kódolás</td></tr>
+    <tr><td><code>qwen2.5-coder:1.5b-base</code></td><td>986 MB</td><td>4k</td><td>100%</td><td>FIM autocomplete</td></tr>
+    <tr><td><code>nomic-embed-text</code></td><td>274 MB</td><td>—</td><td>100%</td><td>Embedding / RAG</td></tr>
+  </table>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">Telepítés — Ollama</span>
+  </div>
+
+  <div class="code-label">// model letöltés</div>
+  <pre>ollama pull &lt;model:tag&gt;</pre>
+
+  <div class="code-label">// custom context variant (Modelfile)</div>
+  <pre>@"
+FROM &lt;base-model&gt;
+PARAMETER num_ctx 16384
+"@ | Out-File -Encoding ascii Modelfile-xxx
+ollama create &lt;new-name&gt; -f Modelfile-xxx</pre>
+
+  <div class="code-label">// lista / törlés</div>
+  <pre>ollama list
+ollama rm &lt;model&gt;</pre>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">Tesztelés és monitoring</span>
+  </div>
+
+  <pre>ollama run &lt;model&gt; "hello"          # gyors teszt
+ollama ps                            # GPU/CPU arány, context
+nvidia-smi                           # VRAM fogyasztás
+
+# Ollama kill (CUDA crash után)
+Get-Process | Where-Object { $_.ProcessName -like "*ollama*" } | Stop-Process -Force
+
+# Log olvasás
+Get-Content "$env:LOCALAPPDATA\Ollama\server.log" -Tail 40</pre>
+
+  <p><strong>OpenCode konfig:</strong> <code>~/.config/opencode/opencode.json</code><br>
+  Default model: <code>qwen3.6-35b-16k</code> — MoE architektúra, ~3B aktív param, gyors válasz</p>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">Tanulságok</span>
+  </div>
+  <ul class="prose">
+    <li>14B Q5/Q4 nem fut — Windows pinned memory bug partial offload-nál</li>
+    <li>LM Studio és Ollama ne fusson egyszerre — VRAM konfliktus</li>
+    <li><strong>MoE modellek (35B-A3B) gyorsabbak</strong> partial offload-nál mint dense</li>
+    <li>CUDA 13.2 bugos Qwen3.6 dense modellel — gibberish output</li>
+    <li>Agentic feladathoz minimum <strong>9B+</strong> kell stabil tool callinghoz</li>
+    <li>Partial offload + CUDA crash: Ollama restart oldja meg</li>
+  </ul>
+  <div class="callout warn">LM Studio és Ollama soha ne fusson egyszerre — VRAM konfliktus garantált.</div>
+</div>
+
+</body>
+</html>

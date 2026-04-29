@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPU Teljesítmény Optimalizálás</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;700;900&display=swap');
+
+  :root {
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-dark: #003322;
+    --cyan: #00e5ff;
+    --bg: #080d0a;
+    --bg2: #0d1510;
+    --bg3: #111a14;
+    --card: #0f1a12;
+    --border: #1a3320;
+    --text: #c8e6c9;
+    --text-dim: #6a9975;
+    --red: #ff4444;
+    --orange: #ffaa00;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.013) 2px, rgba(0,255,136,0.013) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  header { padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+  .header-tag { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--green); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .header-tag::before { content: ''; display: inline-block; width: 16px; height: 1px; background: var(--green); }
+  h1 { font-family: 'Exo 2', sans-serif; font-weight: 900; font-size: clamp(30px, 5vw, 52px); line-height: 0.95; letter-spacing: -1px; color: #fff; text-transform: uppercase; }
+  h1 .accent { color: var(--green); display: block; }
+  .subtitle { margin-top: 12px; font-size: 12px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+  .hw-badge { display: inline-flex; align-items: center; gap: 10px; margin-top: 16px; padding: 7px 14px; border: 1px solid var(--border); background: var(--bg3); font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); flex-wrap: wrap; }
+  .hw-badge .chip { color: var(--orange); }
+  .hw-badge .gpu { color: var(--green); }
+  .hw-badge .sep { color: var(--border); }
+
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin: 28px 0 20px; overflow-x: auto; flex-wrap: nowrap; }
+  .tab { padding: 9px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); cursor: pointer; border: none; border-bottom: 2px solid transparent; background: none; white-space: nowrap; transition: color 0.2s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .section { margin-top: 20px; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .section-num { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--green); background: var(--green-dark); padding: 2px 7px; letter-spacing: 2px; }
+  .section-title { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+
+  .card-grid { display: grid; gap: 2px; }
+  .setting-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid transparent; padding: 14px 18px; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; transition: border-color 0.2s, background 0.2s; position: relative; overflow: hidden; }
+  .setting-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,255,136,0.03), transparent 60%); opacity: 0; transition: opacity 0.2s; }
+  .setting-card:hover { border-left-color: var(--green); background: #111c14; }
+  .setting-card:hover::before { opacity: 1; }
+  .setting-card.priority-high { border-left-color: var(--green-dim); }
+  .setting-card.priority-med { border-left-color: var(--cyan); }
+  .setting-label { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 600; color: #e8f5e9; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .setting-desc { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+  .setting-value { text-align: right; }
+  .value-tag { display: inline-block; font-family: 'Share Tech Mono', monospace; font-size: 10px; padding: 3px 8px; letter-spacing: 1px; font-weight: bold; white-space: nowrap; }
+  .value-tag.on  { background: rgba(0,255,136,0.12); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
+  .value-tag.off { background: rgba(255,68,68,0.08); color: #ff8888; border: 1px solid rgba(255,68,68,0.2); }
+  .value-tag.num { background: rgba(0,229,255,0.08); color: var(--cyan); border: 1px solid rgba(0,229,255,0.2); }
+  .value-tag.custom { background: rgba(255,170,0,0.08); color: var(--orange); border: 1px solid rgba(255,170,0,0.2); }
+
+  .impact-bar { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+  .impact-label { font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--text-dim); letter-spacing: 1px; width: 32px; }
+  .impact-track { flex: 1; height: 2px; background: var(--border); position: relative; max-width: 70px; }
+  .impact-fill { position: absolute; left: 0; top: 0; height: 100%; transition: width 0.7s ease; }
+  .impact-fill.high { background: var(--green); }
+  .impact-fill.med  { background: var(--cyan); }
+  .impact-fill.low  { background: var(--text-dim); }
+
+  .callout { padding: 12px 16px; margin: 14px 0; border-left: 3px solid; background: var(--bg3); font-size: 12px; line-height: 1.7; font-family: 'Share Tech Mono', monospace; }
+  .callout.info  { border-color: var(--cyan); color: #a0d8e0; }
+  .callout.warn  { border-color: var(--orange); color: #d4a840; }
+  .callout.tip   { border-color: var(--green); color: var(--text-dim); }
+  .callout-label { font-weight: bold; margin-right: 8px; letter-spacing: 2px; font-size: 9px; }
+  .callout.info  .callout-label { color: var(--cyan); }
+  .callout.warn  .callout-label { color: var(--orange); }
+  .callout.tip   .callout-label { color: var(--green); }
+
+  .steps { counter-reset: step; display: flex; flex-direction: column; gap: 12px; }
+  .step { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; }
+  .step-num { width: 30px; height: 30px; border: 1px solid var(--green); display: flex; align-items: center; justify-content: center; font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--green); flex-shrink: 0; margin-top: 2px; }
+  .step-num::before { content: counter(step); }
+  .step-body { font-size: 13px; color: var(--text); line-height: 1.7; }
+  .step-body strong { color: #fff; font-weight: 700; }
+  .step-body code { font-family: 'Share Tech Mono', monospace; font-size: 11px; background: var(--bg3); border: 1px solid var(--border); padding: 1px 5px; color: var(--green); }
+
+  .result-box { margin-top: 32px; border: 1px solid var(--green-dim); background: var(--green-dark); padding: 20px; }
+  .result-title { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--green); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .result-title::before { content: '▶'; font-size: 11px; }
+  .result-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
+  .result-item { text-align: center; padding: 14px; background: rgba(0,0,0,0.3); }
+  .result-val { font-family: 'Exo 2', sans-serif; font-size: 32px; font-weight: 900; color: var(--green); line-height: 1; }
+  .result-unit { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); margin-top: 4px; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-tag">Gaming / Hardware</div>
+    <h1>GPU <span class="accent">MAX</span></h1>
+    <div class="subtitle">// CPU BOTTLENECK BYPASS — MINDEN SZÁMÍTÁST A GPU-RA</div>
+    <div class="hw-badge">
+      <span class="chip">⚠ CPU: INTEL (OLD)</span>
+      <span class="sep">|</span>
+      <span class="gpu">✓ GPU: GTX 4060</span>
+      <span class="sep">|</span>
+      <span>OS: WINDOWS</span>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('windows', this)">Windows</button>
+    <button class="tab" onclick="switchTab('nvidia', this)">NVIDIA Control Panel</button>
+    <button class="tab" onclick="switchTab('game', this)">Játék Beállítások</button>
+    <button class="tab" onclick="switchTab('extra', this)">Extra Tippek</button>
+  </div>
+
+  <!-- WINDOWS -->
+  <div id="tab-windows" class="tab-content active">
+    <div class="section">
+      <div class="section-header"><span class="section-num">01</span><span class="section-title">Windows Alapbeállítások</span></div>
+      <div class="callout warn"><span class="callout-label">FONTOS</span>CPU bottleneck esetén az alapelv: csökkenteni a CPU terhelést, maximalizálni a GPU kihasználtságot.</div>
+      <div class="card-grid">
+        <div class="setting-card priority-high">
+          <div><div class="setting-label">Energiagazdálkodás → Nagy Teljesítmény</div><div class="setting-desc">Vezérlőpult → Energiagazdálkodás → Nagy teljesítmény. CPU nem throttle-ol le inaktivitáskor.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:90%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">Nagy teljesítmény</span></div>
+        </div>
+        <div class="setting-card priority-high">
+          <div><div class="setting-label">Hardware-Accelerated GPU Scheduling (HAGS)</div><div class="setting-desc">Beállítások → Rendszer → Kijelző → Grafika → Alapértelmezett grafikai beállítások. Csökkenti CPU overhead-et.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:85%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">BE</span></div>
+        </div>
+        <div class="setting-card priority-high">
+          <div><div class="setting-label">Game Mode</div><div class="setting-desc">Beállítások → Játék → Játékmód. Windows prioritizálja a játék folyamatát, háttérfolyamatok erőforrásait korlátozza.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:80%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">BE</span></div>
+        </div>
+        <div class="setting-card priority-med">
+          <div><div class="setting-label">Xbox Game Bar kikapcsolása</div><div class="setting-desc">Beállítások → Játék → Xbox Game Bar. Háttérben fut és CPU-t fogyaszt feleslegesen.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill med" style="width:55%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag off">KI</span></div>
+        </div>
+        <div class="setting-card priority-med">
+          <div><div class="setting-label">Vizuális effektek minimalizálása</div><div class="setting-desc">Rendszer tulajdonságok → Speciális → Teljesítmény → "Legjobb teljesítmény".</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill med" style="width:50%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag custom">Min. effektek</span></div>
+        </div>
+        <div class="setting-card priority-med">
+          <div><div class="setting-label">Értesítések & háttérappok kikapcsolása</div><div class="setting-desc">Beállítások → Rendszer → Értesítések → KI. Adatvédelem → Háttérappok → minden KI.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill med" style="width:45%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag off">KI</span></div>
+        </div>
+        <div class="setting-card">
+          <div><div class="setting-label">MSI Afterburner — CPU/GPU Monitor</div><div class="setting-desc">Valós idejű GPU Usage figyelés. GPU Usage &lt; 95% = CPU bottleneck megerősítve.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill low" style="width:30%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag custom">Telepítés</span></div>
+        </div>
+      </div>
+      <div class="callout tip"><span class="callout-label">TIP</span>Task Manager → Részletek → jobb klik a játékra → Prioritás beállítása → Magas.</div>
+    </div>
+  </div>
+
+  <!-- NVIDIA -->
+  <div id="tab-nvidia" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="section-num">02</span><span class="section-title">NVIDIA Control Panel</span></div>
+      <div class="callout info"><span class="callout-label">ELÉRÉS</span>Jobb klik asztalon → NVIDIA Control Panel → 3D beállítások kezelése → Program vagy Globális beállítások.</div>
+      <div class="card-grid">
+        <div class="setting-card priority-high">
+          <div><div class="setting-label">Low Latency Mode</div><div class="setting-desc">ULTRA. Csökkenti az előre renderelt képkockák számát, a CPU kevesebbet puffereli és a GPU hamarabb dolgozhat.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:95%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">ULTRA</span></div>
+        </div>
+        <div class="setting-card priority-high">
+          <div><div class="setting-label">Shader Cache Size</div><div class="setting-desc">Unlimited. A GPU saját memóriájában cache-eli a shader-eket, kevesebb CPU fordítás szükséges futás közben.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:80%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">UNLIMITED</span></div>
+        </div>
+        <div class="setting-card priority-high">
+          <div><div class="setting-label">Max Frame Rate (FPS limit)</div><div class="setting-desc">~10%-kal kevesebb mint a max (pl. 120hz → 110 FPS). Csökkenti CPU terhelést, stabilabb frame-time.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:85%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag num">~110 FPS</span></div>
+        </div>
+        <div class="setting-card priority-high">
+          <div><div class="setting-label">Vertical Sync (V-Sync)</div><div class="setting-desc">KI. V-Sync CPU-ra vár, növeli latenciát. Helyette FPS limit + G-Sync.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:75%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag off">KI</span></div>
+        </div>
+        <div class="setting-card priority-med">
+          <div><div class="setting-label">Power Management Mode</div><div class="setting-desc">Prefer maximum performance. GPU nem lép alacsonyabb órajelre terhelésingadozáskor.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill med" style="width:65%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">MAX PERF</span></div>
+        </div>
+        <div class="setting-card priority-med">
+          <div><div class="setting-label">Texture Filtering — Quality</div><div class="setting-desc">High Performance. Gyorsabb szűrés, minimális minőségveszteség.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill med" style="width:50%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag custom">HIGH PERF</span></div>
+        </div>
+        <div class="setting-card priority-med">
+          <div><div class="setting-label">NVIDIA DLSS</div><div class="setting-desc">Ha a játék támogatja: DLSS Quality vagy Balanced. Tensor core-okon fut, sok FPS nyereség.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:90%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">BE — QUALITY</span></div>
+        </div>
+        <div class="setting-card">
+          <div><div class="setting-label">Triple Buffering</div><div class="setting-desc">KI (ha V-Sync is ki van). Felesleges VRAM és CPU overhead.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill low" style="width:25%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag off">KI</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="tab-game" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="section-num">03</span><span class="section-title">Játékon Belüli Beállítások</span></div>
+      <div class="callout info"><span class="callout-label">STRATÉGIA</span>CPU bottleneck esetén: ALACSONY CPU-terhelésű opciókat le, MAGAS GPU-terhelésű opciókat fel.</div>
+      <div class="section-header" style="margin-top:20px;">
+        <span class="section-num" style="background:rgba(0,255,136,0.15)">▲</span>
+        <span class="section-title" style="color:var(--green); font-size:16px;">GPU-ra rakandó — Fel</span>
+      </div>
+      <div class="card-grid">
+        <div class="setting-card priority-high">
+          <div><div class="setting-label">Textúra Minőség</div><div class="setting-desc">Magas vagy Ultra. Szinte 100%-ban GPU/VRAM feladat. GTX 4060 8GB VRAM-mal bőven elbír.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:90%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">ULTRA</span></div>
+        </div>
+        <div class="setting-card priority-high">
+          <div><div class="setting-label">DLSS / FSR</div><div class="setting-desc">Ha elérhető: BE, Quality módban. GPU tensor core-ok végzik, alig látható minőségveszteség.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:95%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">BE</span></div>
+        </div>
+        <div class="setting-card priority-med">
+          <div><div class="setting-label">Ambient Occlusion, SSAO</div><div class="setting-desc">GPU post-process effekt. CPU bottleneck-nél emelhető.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill med" style="width:55%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag on">BE</span></div>
+        </div>
+      </div>
+      <div class="section-header" style="margin-top:20px;">
+        <span class="section-num" style="background:rgba(255,68,68,0.1); color:#ff4444;">▼</span>
+        <span class="section-title" style="color:#ff8888; font-size:16px;">CPU-terhelő — Le</span>
+      </div>
+      <div class="card-grid">
+        <div class="setting-card">
+          <div><div class="setting-label">Látótávolság / View Distance</div><div class="setting-desc">Erősen CPU-t terheli (AI, fizika, streaming). Közepes értékre csökkentve sokat segít.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:90%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag off">KÖZEPES</span></div>
+        </div>
+        <div class="setting-card">
+          <div><div class="setting-label">NPC / AI Sűrűség</div><div class="setting-desc">Nyílt világú játékoknál kritikus. Több NPC = több CPU számítás (pathfinding, AI).</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill high" style="width:85%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag off">ALACSONY</span></div>
+        </div>
+        <div class="setting-card">
+          <div><div class="setting-label">Fizikai Szimulációk (Physics, Particles)</div><div class="setting-desc">CPU-n fut (kivéve GPU PhysX). Csökkentsd ha elérhető opció.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill med" style="width:65%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag off">ALACSONY</span></div>
+        </div>
+        <div class="setting-card">
+          <div><div class="setting-label">Overlay-ek (Discord, Steam, GFE)</div><div class="setting-desc">Mind CPU-t vonnak el. Játék közben kapcsold ki az összeset.</div><div class="impact-bar"><span class="impact-label">HATÁS</span><div class="impact-track"><div class="impact-fill med" style="width:50%"></div></div></div></div>
+          <div class="setting-value"><span class="value-tag off">KI</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXTRA -->
+  <div id="tab-extra" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="section-num">04</span><span class="section-title">Haladó & Extra Tippek</span></div>
+      <div class="steps">
+        <div class="step"><div class="step-num"></div><div class="step-body"><strong>CPU affinitás beállítása</strong><br>Task Manager → Részletek → jobb klik → <code>Set Affinity</code>. Régebbi CPU-n: hagyd az összes magot bejelölve.</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-body"><strong>BIOS: XMP / EXPO RAM profil engedélyezése</strong><br>RAM sebesség <strong>kritikusan</strong> befolyásolja a CPU bottleneck-et. DDR4: 3200+ MHz sokkal jobb mint az alap 2133 MHz.</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-body"><strong>GeForce Experience: Automatikus optimalizálás KI</strong><br>GFE néha rosszul optimalizál. Overlay is legyen KI: <code>Alt+Z</code> → Beállítások → Általános.</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-body"><strong>Driver: Clean install</strong><br>GeForce.com → Game Ready Driver → <code>Custom install</code> → <strong>Perform clean installation</strong> pipa be.</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-body"><strong>Fullscreen: Exclusive mód</strong><br>Mindig <strong>Exclusive Fullscreen</strong>, ne Borderless Windowed. Közvetlen GPU hozzáférés, kevesebb DWM overhead.</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-body"><strong>NVIDIA Reflex (ha támogatott)</strong><br>Competitive játékokban (Fortnite, Valorant, Apex) kapcsold BE. Csökkenti render latenciát CPU bottleneck esetén is.</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-body"><strong>GPU utilization &lt; 90%? → Magasabb felbontás</strong><br>Próbálj DSR-t (Dynamic Super Resolution) — több GPU munkát ad, "feljebb tolja" a bottleneck határát.</div></div>
+      </div>
+      <div class="callout warn" style="margin-top:20px;"><span class="callout-label">FIGYELEM</span>CPU bottleneck teljes megszüntetése szoftveresen nem lehetséges — ezek csökkentik a hatását. A CPU csere az egyetlen teljes megoldás.</div>
+    </div>
+  </div>
+
+  <div class="result-box">
+    <div class="result-title">Várható Eredmény</div>
+    <div class="result-items">
+      <div class="result-item"><div class="result-val">+15<span style="font-size:18px">%</span></div><div class="result-unit">AVG FPS NÖVEKEDÉS</div></div>
+      <div class="result-item"><div class="result-val">-30<span style="font-size:18px">%</span></div><div class="result-unit">INPUT LATENCIA</div></div>
+      <div class="result-item"><div class="result-val">90<span style="font-size:18px">%+</span></div><div class="result-unit">GPU UTILIZATION</div></div>
+    </div>
+  </div>
+
+</div>
+<script>
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.impact-fill').forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0';
+      setTimeout(() => { bar.style.width = w; }, 200 + Math.random() * 500);
+    });
+  });
+</script>
+</body>
+</html>
