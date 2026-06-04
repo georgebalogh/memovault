@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teszt Memo - Skill Működés</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
+
+  :root {
+    --green: #3fb950; --green-dark: #0d2016; --cyan: #58d068;
+    --red: #f85149; --orange: #e3b341;
+    --bg: #0d1117; --bg2: #111620; --bg3: #161b22;
+    --border: #21262d; --border2: #30363d;
+    --text: #e6edf3; --text-mid: #c9d1d9; --text-dim: #8b949e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.75; padding: 40px 32px 80px; max-width: 820px; margin: 0 auto; }
+  body::before { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(63,185,80,0.007) 3px, rgba(63,185,80,0.007) 4px); pointer-events: none; z-index: 9999; }
+
+  header { padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .header-tag { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--green); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .header-tag::before { content: ''; display: inline-block; width: 16px; height: 1px; background: var(--green); }
+  h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 48px); text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1.1; }
+  h1 span { color: var(--green); }
+  .meta { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-dim); }
+  .tag { background: var(--bg3); border: 1px solid var(--border2); padding: 2px 7px; color: var(--green); font-size: 13px; letter-spacing: 1px; }
+
+  .section { margin-top: 32px; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .section-num { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--green); background: var(--green-dark); padding: 3px 8px; letter-spacing: 2px; flex-shrink: 0; }
+  .section-title { font-family: 'Rajdhani', sans-serif; font-size: 23px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+  .sub-header { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cyan); margin: 20px 0 8px; }
+
+  p { color: var(--text-mid); margin-bottom: 10px; }
+  ul.prose { color: var(--text-mid); margin: 8px 0 14px 20px; }
+  ul.prose li { margin-bottom: 5px; }
+  ul.prose li strong { color: #fff; font-weight: 600; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .callout { padding: 10px 15px; margin: 14px 0; border-left: 3px solid; background: var(--bg3); font-size: 15px; line-height: 1.75; color: var(--text-mid); font-style: italic; }
+  .callout.tip  { border-color: var(--green); }
+  .callout.warn { border-color: var(--orange); color: #d4a840; }
+
+  .code-label { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px; font-family: 'Share Tech Mono', monospace; color: var(--text-dim); }
+  pre { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 13px 16px; overflow-x: auto; margin: 4px 0 14px; font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 12px; color: var(--text); line-height: 1.65; }
+  code { font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 11px; color: var(--green); background: var(--bg); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 12px 0 18px; }
+  th { background: var(--bg3); color: var(--green); padding: 7px 10px; text-align: left; border: 1px solid var(--border); font-weight: 600; font-family: 'Share Tech Mono', monospace; font-size: 14px; letter-spacing: 0.5px; }
+  td { padding: 6px 10px; border: 1px solid var(--border); color: var(--text-mid); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg); }
+  tr:nth-child(odd)  td { background: var(--bg2); }
+  td code { font-size: 11px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">Test</div>
+  <h1>Teszt Memo - <span>Skill Működés</span></h1>
+  <div class="meta">
+    <span>2026-05-05</span>
+    <span style="color:#30363d">|</span>
+    <span class="tag">memovault</span>
+    <span class="tag">skill</span>
+    <span class="tag">claude</span>
+    <span class="tag">test</span>
+  </div>
+</header>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">Claude Memória Tisztítás</span>
+  </div>
+  <p>A session végigvett a Claude memória rendszer tisztításán és optimalizálásán. Azonosítottuk a redundáns elemeket és átstrukturáltuk a memóriát három fő részre:</p>
+  <ul class="prose">
+    <li><strong>Memory edits (5 bejegyzés)</strong> — Work, Personal, Top of mind, Active workflows, Completed research</li>
+    <li><strong>Instructions for Claude</strong> — Viselkedési szabályok (Recipes, PDF fonts, Interaction style, Communication tone, Tool usage, stb.)</li>
+    <li><strong>Skills</strong> — Specializált tudáscsomagok (pl. MemoVault skill)</li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">Instructions for Claude — Új Szabályok</span>
+  </div>
+  <p>Részletesen végigmentünk viselkedési szabályokon és hozzáadtuk a következőket:</p>
+  <ul class="prose">
+    <li><strong>Communication tone</strong> — No preambles, no apologies, no meta-praise, direct bad news delivery</li>
+    <li><strong>Tool usage</strong> — Mandatory search, MCP priority, auto-retry on fail, large file iteration, PDF validation, tool chain completion</li>
+    <li><strong>Context/memory</strong> — Past info verification (conversation_search), contradiction handling</li>
+    <li><strong>Validation</strong> — SQL EXPLAIN dry-run, Hungarian diacritic test</li>
+    <li><strong>Error handling</strong> — Permission auto-fix, API rate limit auto-retry, path auto-creation (safe paths only)</li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">MemoVault → Skill Konverzió</span>
+  </div>
+  <p>Azonosítottuk, hogy a MemoVault workflow jobban működne <strong>skill-ként</strong> mint Instructions-ben. Előnyök:</p>
+  <ul class="prose">
+    <li><strong>Token hatékonyság</strong> — Csak akkor töltődik be, amikor használod</li>
+    <li><strong>Template külön file-ban</strong> — Dark-green HTML sablon könnyen szerkeszthető</li>
+    <li><strong>Verziókezelés</strong> — Git-ben tárolható, megosztható</li>
+    <li><strong>Slash command</strong> — <code>/memovault kategória: X, cím: Y</code></li>
+  </ul>
+  
+  <div class="sub-header">Skill struktúra</div>
+  <div class="code-label">// file tree</div>
+  <pre>C:\Work\.claude\skills\memovault\
+├── SKILL.md                  # Fő instrukciók
+├── templates/
+│   └── memo_template.html    # Dark-green HTML sablon
+└── scripts/
+    └── add_memo.py           # Python script (future)</pre>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">Filesystem MCP Hozzáférés</span>
+  </div>
+  <p>Kitérő: Próbáltuk hozzáadni <code>C:\Users\balog\.claude</code> könyvtárat az engedélyezett listához, de ez Claude Desktop újratelepítést eredményezett (config hiba). Végül a <code>C:\Work\.claude\skills\</code> helyen hoztuk létre a skillt, ami elérhető Filesystem MCP-vel.</p>
+</div>
+
+<div class="callout tip">
+  <strong>Következő lépés:</strong> Claude Desktop újraindítása szükséges, hogy felismerje az új MemoVault skillt.
+</div>
+
+</body>
+</html>

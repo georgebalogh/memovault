@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS Template Refactor</title>
+<link rel="stylesheet" href="../memo-styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header-tag mono uppercase text-green flex items-center flex-gap-8 mb-12">Teszt1</div>
+  <h1 class="rajdhani uppercase text-white">CSS Template <span>Refactor</span></h1>
+  <div class="meta mt-14 flex flex-gap-8 flex-wrap items-center mono text-dim">
+    <span>2026-05-05</span>
+    <span style="color:#30363d">|</span>
+    <span class="tag">css</span>
+    <span class="tag">template</span>
+    <span class="tag">refactor</span>
+    <span class="tag">utility-classes</span>
+  </div>
+</header>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num mono text-green uppercase flex-shrink-0">01</span>
+    <span class="section-title rajdhani uppercase text-white">Feladat</span>
+  </div>
+  <p class="text-mid mb-10">HTML template CSS refaktorálása: inline stílusok kiszervezése utility osztályokba, hasonló elemek konszolidálása, külső CSS fájlba mentés.</p>
+</div>
+
+<hr class="divider">
+
+<div class="section mt-32">
+  <div class="section-header">
+    <span class="section-num mono text-green uppercase flex-shrink-0">02</span>
+    <span class="section-title rajdhani uppercase text-white">Végrehajtott lépések</span>
+  </div>
+  
+  <div class="sub-header rajdhani uppercase text-cyan mt-20 mb-8">1. CSS struktúra kialakítása</div>
+  <ul class="prose text-mid">
+    <li><strong>Változók</strong> — színek, betűméretek centralizálva <code class="text-green">:root</code>-ban</li>
+    <li><strong>Utility osztályok</strong> — Typography (.mono, .rajdhani, .uppercase, .text-*), Layout (.flex, .items-center, .flex-gap-*), Spacing (.mb-*, .mt-*, .pb-*), Borders (.border-bottom, .border-left-3)</li>
+    <li><strong>Komponens osztályok</strong> — header, section, callout, code, table</li>
+  </ul>
+
+  <div class="sub-header rajdhani uppercase text-cyan mt-20 mb-8">2. Külső CSS file létrehozása</div>
+  <p class="text-mid mb-10">Elhelyezés: <code class="text-green">C:\Work\Memo\memo-styles.css</code></p>
+  <p class="text-mid mb-10">Tartalma: 440+ sor refaktorált CSS, utility osztályokkal és konszolidált elemekkel</p>
+
+  <div class="sub-header rajdhani uppercase text-cyan mt-20 mb-8">3. Template átírása</div>
+  <p class="text-mid mb-10">Új template struktúra külső CSS hivatkozással:</p>
+  <div class="callout tip border-left-3 text-mid">
+    <code class="text-green">&lt;link rel="stylesheet" href="../memo-styles.css"&gt;</code> helyettesíti a teljes <code class="text-green">&lt;style&gt;...&lt;/style&gt;</code> blokkot
+  </div>
+
+  <div class="sub-header rajdhani uppercase text-cyan mt-20 mb-8">4. Memos fájlok átírása</div>
+  <p class="text-mid mb-10">Mind a 8 HTML fájl a <code class="text-green">C:\Work\Memo\memos\</code> könyvtárban:</p>
+  <ul class="prose text-mid">
+    <li>ai-claude-15-tipp.html</li>
+    <li>ai-local-llm.html</li>
+    <li>english-ai-tanulas.html</li>
+    <li>gpu-optimization.html</li>
+    <li>net-dependency-injection.html</li>
+    <li>net-kafka-rabbitmq.html</li>
+    <li>skill-aktivalasi-teszt.html</li>
+    <li>teszt-memovault-skill.html</li>
+  </ul>
+  <p class="text-mid mb-10">Mindegyikben: <code class="text-green">&lt;style&gt;...&lt;/style&gt;</code> → <code class="text-green">&lt;link rel="stylesheet" href="../memo-styles.css"&gt;</code></p>
+</div>
+
+<hr class="divider">
+
+<div class="section mt-32">
+  <div class="section-header">
+    <span class="section-num mono text-green uppercase flex-shrink-0">03</span>
+    <span class="section-title rajdhani uppercase text-white">Eredmény</span>
+  </div>
+  <ul class="prose text-mid">
+    <li><strong>Egyetlen CSS forrás</strong> — változtatás egy helyen, minden memo automatikusan frissül</li>
+    <li><strong>Karbantarthatóság</strong> — utility osztályok újrafelhasználhatók, konszolidált stílus</li>
+    <li><strong>Kisebb HTML fájlok</strong> — ~300-400 sor CSS helyett 1 sor <code class="text-green">&lt;link&gt;</code></li>
+    <li><strong>Verziókezelés</strong> — CSS külön trackelhető Git-ben</li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<div class="section mt-32">
+  <div class="section-header">
+    <span class="section-num mono text-green uppercase flex-shrink-0">04</span>
+    <span class="section-title rajdhani uppercase text-white">Következő lépések</span>
+  </div>
+  <ul class="prose text-mid">
+    <li>Index.html frissítése az új memo bejegyzéssel</li>
+    <li>MemoVault skill automatizálása (CSS link automatikus beillesztés)</li>
+    <li>További utility osztályok hozzáadása igény szerint</li>
+  </ul>
+</div>
+
+</body>
+</html>

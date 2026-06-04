@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SightSeeing App — Scope & Design</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; padding: 32px; line-height: 1.7; }
+  .memo-header { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid #21262d; }
+  .memo-category { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #3fb950; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+  .memo-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 28px; color: #fff; letter-spacing: 1px; margin-bottom: 10px; }
+  .memo-meta { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #8b949e; display: flex; gap: 16px; flex-wrap: wrap; }
+  .tag { background: #0d2016; border: 1px solid #21262d; color: #3fb950; padding: 2px 8px; font-size: 11px; border-radius: 3px; }
+  .section { margin-bottom: 28px; }
+  .section-num { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #3fb950; letter-spacing: 2px; margin-bottom: 6px; }
+  .section-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 18px; color: #c9d1d9; margin-bottom: 12px; border-left: 3px solid #3fb950; padding-left: 10px; }
+  p { color: #8b949e; font-size: 14px; margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 8px; }
+  th { text-align: left; color: #3fb950; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1px; padding: 6px 10px; border-bottom: 1px solid #21262d; }
+  td { padding: 7px 10px; border-bottom: 1px solid #161b22; color: #c9d1d9; vertical-align: top; }
+  td:first-child { color: #8b949e; width: 180px; }
+  tr:last-child td { border-bottom: none; }
+  .highlight { background: #0d2016; border: 1px solid #21262d; border-left: 3px solid #3fb950; padding: 12px 16px; border-radius: 0 4px 4px 0; font-size: 13px; color: #c9d1d9; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="memo-header">
+  <div class="memo-category">App Development</div>
+  <div class="memo-title">SightSeeing App — Scope & Design</div>
+  <div class="memo-meta">
+    <span>2026-05-11</span>
+    <span class="tag">sightseeing</span>
+    <span class="tag">artifact</span>
+    <span class="tag">react</span>
+    <span class="tag">claude-api</span>
+    <span class="tag">booking</span>
+    <span class="tag">wizard</span>
+    <span class="tag">timeline</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-num">01</div>
+  <div class="section-title">App célja</div>
+  <p>Utazástervező app: a felhasználó megadja az úti célt, napok számát, főket és utazási eszközt, kiválasztja az érdeklődési köröket, az app pedig generál egy napi bontású útvonaltervet és szállásajánlatokat.</p>
+</div>
+
+<div class="section">
+  <div class="section-num">02</div>
+  <div class="section-title">Artifact fázis — végleges scope</div>
+  <table>
+    <tr><th>Dimenzió</th><th>Döntés</th></tr>
+    <tr><td>Platform</td><td>Claude Artifact (React JSX) → portolás Claude Code-dal</td></tr>
+    <tr><td>Útvonal logika</td><td>Claude API — egy nagy JSON hívás (városra szabott, magyar nyelvű)</td></tr>
+    <tr><td>POI adatforrás</td><td>Claude tudása (nincs külső API az Artifact fázisban)</td></tr>
+    <tr><td>Szállásajánlat</td><td>Booking.com deep link — 3 kategória (budget / mid / prémium)</td></tr>
+    <tr><td>Kategória-választó</td><td>Fix checkbox lista (Claude városra szabja a konkrét helyeket)</td></tr>
+    <tr><td>Output nyelv</td><td>Magyar (mindig)</td></tr>
+    <tr><td>Napi bontás</td><td>Párhuzamos timeline — reggel / délben / este, minden nap egymás mellett</td></tr>
+    <tr><td>Layout</td><td>Wizard (3 lépés) + párhuzamos napi timeline output</td></tr>
+    <tr><td>Vizuális stílus</td><td>Színes / utazásos hangulat — kék (#185FA5), zöld, napsárga</td></tr>
+    <tr><td>Cost</td><td>$0 (Claude Max keretén belül)</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-num">03</div>
+  <div class="section-title">Webapp fázis — végleges scope</div>
+  <table>
+    <tr><th>Dimenzió</th><th>Döntés</th></tr>
+    <tr><td>Platform</td><td>React / Next.js, deployolt</td></tr>
+    <tr><td>Útvonal logika</td><td>Claude API — egy nagy JSON hívás</td></tr>
+    <tr><td>POI adatforrás</td><td>Google Places API + Claude API (Places adja a POI-t, Claude rendezi)</td></tr>
+    <tr><td>Szállásajánlat</td><td>Booking.com deep link — 3 kategória (Affiliate API-ra felkészített architektúra)</td></tr>
+    <tr><td>Kategória-választó</td><td>Teljes AI — Claude API ajánlja a kategóriákat is</td></tr>
+    <tr><td>Output nyelv</td><td>Input nyelve szerint automatikus</td></tr>
+    <tr><td>Napi bontás</td><td>Párhuzamos timeline (ugyanaz mint Artifact fázisban)</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-num">04</div>
+  <div class="section-title">Wizard lépései</div>
+  <div class="highlight">1. lépés — Alapadatok: Honnan / Hova / Hány nap / Hány fő / Utazási eszköz</div>
+  <div class="highlight">2. lépés — Érdeklődési körök: Fix kategória checkbox kártyák (múzeum, étterem, látnivalók, természet, bevásárlás, éjszakai élet, templomok, történelem) — kártya formátum, ikon + leírás</div>
+  <div class="highlight">3. lépés — Eredmény: Párhuzamos napi timeline (reggel/délben/este oszlopok) + szállás-kártyák alul + "Újratervezés" gomb</div>
+</div>
+
+<div class="section">
+  <div class="section-num">05</div>
+  <div class="section-title">Claude API hívás struktúra</div>
+  <p>Egy JSON hívás, strukturált output. A prompt tartalmaz: városnév, napok száma, főre, utazási eszköz, kiválasztott kategóriák. Claude visszaad egy JSON-t a következő struktúrával:</p>
+  <div class="highlight">{ days: [ { day: 1, title: "...", morning: { name, description, duration, tip }, lunch: {...}, evening: {...} } ], hotels: [ { category: "budget|mid|premium", name, area, note } ] }</div>
+</div>
+
+<div class="section">
+  <div class="section-num">06</div>
+  <div class="section-title">Booking.com deep link formátum</div>
+  <div class="highlight">https://www.booking.com/searchresults.html?ss={város}&checkin={dátum}&checkout={dátum}&group_adults={főre}&nflt=class%3D{csillag}</div>
+  <p>Budget: class=1-2, Mid: class=3, Prémium: class=4-5. Dátum alapértelmezett: mai nap + 30 nap.</p>
+</div>
+
+<div class="section">
+  <div class="section-num">07</div>
+  <div class="section-title">Következő lépések</div>
+  <div class="highlight">1. Claude Design finomítás — részletes UI specifikáció a Wizard minden lépésére</div>
+  <div class="highlight">2. Artifact build — React JSX, Claude API integrációval</div>
+  <div class="highlight">3. Tesztelés → finomítás → Claude Code portolás Next.js-re</div>
+  <div class="highlight">4. Webapp: Google Places API integráció + Booking Affiliate API felkészítés</div>
+</div>
+
+</body>
+</html>

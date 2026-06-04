@@ -1,0 +1,435 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
+
+/* ═══════════════════════════════════════════════════════════════
+   VÁLTOZÓK
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --green: #3fb950;
+  --green-dark: #0d2016;
+  --cyan: #58d068;
+  --red: #f85149;
+  --orange: #e3b341;
+  --bg: #0d1117;
+  --bg2: #111620;
+  --bg3: #161b22;
+  --border: #21262d;
+  --border2: #30363d;
+  --text: #e6edf3;
+  --text-mid: #c9d1d9;
+  --text-dim: #8b949e;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════════════ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  padding: 40px 32px 80px;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(63,185,80,0.007) 3px,
+    rgba(63,185,80,0.007) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TYPOGRAPHY — KÖZÖS OSZTÁLYOK
+   ═══════════════════════════════════════════════════════════════ */
+.mono {
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.rajdhani {
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.text-mid {
+  color: var(--text-mid);
+}
+
+.text-dim {
+  color: var(--text-dim);
+}
+
+.text-green {
+  color: var(--green);
+}
+
+.text-cyan {
+  color: var(--cyan);
+}
+
+.text-white {
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT — KÖZÖS OSZTÁLYOK
+   ═══════════════════════════════════════════════════════════════ */
+.flex {
+  display: flex;
+}
+
+.flex-gap-8 {
+  gap: 8px;
+}
+
+.flex-gap-10 {
+  gap: 10px;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SPACING — KÖZÖS OSZTÁLYOK
+   ═══════════════════════════════════════════════════════════════ */
+.mb-8 {
+  margin-bottom: 8px;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.mb-12 {
+  margin-bottom: 12px;
+}
+
+.mb-14 {
+  margin-bottom: 14px;
+}
+
+.mb-18 {
+  margin-bottom: 18px;
+}
+
+.mt-14 {
+  margin-top: 14px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mt-32 {
+  margin-top: 32px;
+}
+
+.pb-12 {
+  padding-bottom: 12px;
+}
+
+.pb-24 {
+  padding-bottom: 24px;
+}
+
+.mb-28 {
+  margin-bottom: 28px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BORDERS — KÖZÖS OSZTÁLYOK
+   ═══════════════════════════════════════════════════════════════ */
+.border-bottom {
+  border-bottom: 1px solid var(--border);
+}
+
+.border-left-3 {
+  border-left: 3px solid;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════════════════════ */
+header {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+
+.header-tag {
+  font-size: 13px;
+  letter-spacing: 4px;
+}
+
+.header-tag::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 1px;
+  background: var(--green);
+}
+
+h1 {
+  font-weight: 700;
+  font-size: clamp(30px, 4vw, 48px);
+  letter-spacing: 1px;
+  line-height: 1.1;
+}
+
+h1 span {
+  color: var(--green);
+}
+
+.meta {
+  font-size: 13px;
+}
+
+.tag {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  padding: 2px 7px;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTIONS
+   ═══════════════════════════════════════════════════════════════ */
+.section {
+  margin-top: 32px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-num {
+  font-size: 13px;
+  background: var(--green-dark);
+  padding: 3px 8px;
+  letter-spacing: 2px;
+}
+
+.section-title {
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.sub-header {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin: 20px 0 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTENT
+   ═══════════════════════════════════════════════════════════════ */
+p {
+  margin-bottom: 10px;
+}
+
+ul.prose {
+  margin: 8px 0 14px 20px;
+}
+
+ul.prose li {
+  margin-bottom: 5px;
+}
+
+ul.prose li strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CALLOUTS
+   ═══════════════════════════════════════════════════════════════ */
+.callout {
+  padding: 10px 15px;
+  margin: 14px 0;
+  background: var(--bg3);
+  font-size: 15px;
+  line-height: 1.75;
+  font-style: italic;
+}
+
+.callout.tip {
+  border-color: var(--green);
+}
+
+.callout.warn {
+  border-color: var(--orange);
+  color: #d4a840;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CODE
+   ═══════════════════════════════════════════════════════════════ */
+.code-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+pre {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 13px 16px;
+  overflow-x: auto;
+  margin: 4px 0 14px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+code {
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 11px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLE
+   ═══════════════════════════════════════════════════════════════ */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  margin: 12px 0 18px;
+}
+
+th {
+  background: var(--bg3);
+  padding: 7px 10px;
+  text-align: left;
+  border: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+td {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  vertical-align: top;
+}
+
+tr:nth-child(even) td {
+  background: var(--bg);
+}
+
+tr:nth-child(odd) td {
+  background: var(--bg2);
+}
+
+td code {
+  font-size: 11px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KOMBINÁLT OSZTÁLYOK (gyakran együtt használt stílusok)
+   ═══════════════════════════════════════════════════════════════ */
+.header-tag {
+  /* mono + uppercase + text-green + flex + items-center + flex-gap-8 + mb-12 már benne van */
+}
+
+h1 {
+  /* rajdhani + uppercase + text-white már benne van */
+}
+
+.meta {
+  /* mt-14 + flex + flex-gap-8 + flex-wrap + items-center + mono + text-dim már benne van */
+}
+
+.tag {
+  /* text-green + mono + uppercase már benne van */
+}
+
+.section-num {
+  /* mono + text-green + uppercase + flex-shrink-0 már benne van */
+}
+
+.section-title {
+  /* rajdhani + uppercase + text-white már benne van */
+}
+
+.sub-header {
+  /* rajdhani + uppercase + text-cyan + mt-20 + mb-8 már benne van */
+}
+
+p {
+  /* text-mid + mb-10 már benne van */
+}
+
+ul.prose {
+  /* text-mid már benne van */
+}
+
+.callout {
+  /* text-mid + border-left-3 már benne van */
+}
+
+.code-label {
+  /* mono + text-dim már benne van */
+}
+
+pre {
+  /* text-white már benne van */
+}
+
+code {
+  /* text-green már benne van */
+}
+
+th {
+  /* text-green + mono már benne van */
+}
+
+td {
+  /* text-mid már benne van */
+}
